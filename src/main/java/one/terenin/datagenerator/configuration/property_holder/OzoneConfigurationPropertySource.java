@@ -1,4 +1,4 @@
-package one.terenin.datagenerator.configuration.property;
+package one.terenin.datagenerator.configuration.property_holder;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -14,9 +14,17 @@ import org.springframework.stereotype.Component;
 public class OzoneConfigurationPropertySource {
 
     final boolean defaultConfigLoadingEnable;
+    final String omAddress;
+    final boolean ozoneSecurityEnable;
 
-    public OzoneConfigurationPropertySource(@Value("${ozone.default.conf.enable}") Boolean defaultConfigLoadingEnable, boolean defaultConfigLoadingEnable1) {
+    public OzoneConfigurationPropertySource(
+            @Value("${ozone.default.conf.enable}") Boolean defaultConfigLoadingEnable,
+            @Value("${ozone.om.address}") String omAddress,
+            @Value("${ozone.security.enabled}") Boolean ozoneSecurityEnable
+            ) {
         this.defaultConfigLoadingEnable = Boolean.TRUE.equals(defaultConfigLoadingEnable);
+        this.omAddress = omAddress;
+        this.ozoneSecurityEnable = Boolean.TRUE.equals(ozoneSecurityEnable);
     }
 
 }

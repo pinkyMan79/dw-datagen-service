@@ -5,7 +5,7 @@ ozone:
   security:
     enabled: false
   om:
-    address: "127.0.0.1:9878"
+    address: "127.0.0.1:9862"
   default:
     conf:
       enable: true

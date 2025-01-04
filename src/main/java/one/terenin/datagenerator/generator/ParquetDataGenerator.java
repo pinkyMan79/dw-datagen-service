@@ -17,7 +17,6 @@ import org.apache.parquet.hadoop.metadata.CompressionCodecName;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.*;
 
 @Service
@@ -39,12 +38,10 @@ public class ParquetDataGenerator {
         OzoneBucket bucket = volume.getBucket(OzoneNames.ozoneBucketName);
 
         // Create OzoneOutputStream for the file
-        try (OzoneOutputStream ozoneOutputStream = bucket.createKey(outputFileName, 0L);
-             OutputStream outputStream = ozoneOutputStream) {
-
-            // Create ParquetWriter that writes directly to the OzoneOutputStream
+        try (OzoneOutputStream ozoneOutputStream = bucket.createKey(outputFileName, 0L)) {
+            // Create ParquetWriter that writes directly to the OzoneOutputStream, see fw.OzoneOutputFile
             try (ParquetWriter<GenericRecord> writer = AvroParquetWriter.<GenericRecord>builder(
-                            new OzoneOutputFile(outputStream))
+                            new OzoneOutputFile(ozoneOutputStream))
                     .withSchema(schema)
                     .withCompressionCodec(CompressionCodecName.SNAPPY)
                     .build()) {
@@ -63,7 +60,7 @@ public class ParquetDataGenerator {
             dataList.add(DataBundle.builder()
                     .uuid(UUID.randomUUID().toString())
                     .name("Product " + i)
-                    .description("Description of Product " + i)
+                    .description("Description of Product: lorem ipsum set a met..." + i)
                     .type("Type " + (i % 5))
                     .mainCategory("Category " + (i % 3))
                     .price(String.valueOf(100 + i))

@@ -1,11 +1,13 @@
 package one.terenin.datagenerator;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import one.terenin.datagenerator.common.OzoneNames;
 import org.apache.hadoop.ozone.client.ObjectStore;
 import org.apache.hadoop.ozone.client.OzoneBucket;
 import org.apache.hadoop.ozone.client.OzoneClient;
 import org.apache.hadoop.ozone.client.OzoneVolume;
+import org.apache.hadoop.ozone.util.ShutdownHookManager;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -19,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.UUID;
 
+@Slf4j
 @AllArgsConstructor
 @SpringBootApplication
 public class DataGeneratorApplication {
@@ -31,7 +34,8 @@ public class DataGeneratorApplication {
             try {
                 ozoneClient.close();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                // do nothing - stay it for shutdown hook
+                log.info("Could not close OzoneClient from context destroy event, will be closed by shutdown hook", e);
             }
         });
         run.addApplicationListener((ContextRefreshedEvent event) -> {
