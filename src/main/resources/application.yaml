@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: data-generator
+ozone:
+  security:
+    enabled: false
+  om:
+    address: "127.0.0.1:9878"
+  default:
+    conf:
+      enable: true
