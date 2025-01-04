@@ -22,7 +22,7 @@
 ## Requirements
 - Java 11+
 - Apache Ozone cluster (для записи данных).
-- Maven (для управления зависимостями).
+- Gradle (для управления зависимостями).
 
 ## Installation
    ```bash
