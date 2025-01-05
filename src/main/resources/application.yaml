@@ -9,3 +9,6 @@ ozone:
   default:
     conf:
       enable: true
+data:
+  gen:
+    count: 200

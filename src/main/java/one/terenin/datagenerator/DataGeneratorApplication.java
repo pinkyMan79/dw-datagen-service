@@ -3,6 +3,7 @@ package one.terenin.datagenerator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import one.terenin.datagenerator.common.OzoneNames;
+import one.terenin.datagenerator.service.LoaderService;
 import org.apache.hadoop.ozone.client.ObjectStore;
 import org.apache.hadoop.ozone.client.OzoneBucket;
 import org.apache.hadoop.ozone.client.OzoneClient;
@@ -20,6 +21,8 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @AllArgsConstructor
@@ -49,10 +52,17 @@ public class DataGeneratorApplication {
                 if (standart.getBucket(OzoneNames.ozoneBucketName) == null) {
                     standart.createBucket(OzoneNames.ozoneBucketName);
                 }
+                if (standart.getBucket(OzoneNames.ozoneJSONBucketName) == null) {
+                    standart.createBucket(OzoneNames.ozoneJSONBucketName);
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });
+
+        new ScheduledThreadPoolExecutor(1).schedule(() -> {
+            run.getBean("loaderService", LoaderService.class).load();
+        }, 5, TimeUnit.MINUTES);
     }
 
 }
