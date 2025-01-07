@@ -4,25 +4,23 @@ import org.apache.avro.Schema;
 
 public class ParquetSchemaHolder {
 
-    public static String asJson = """
-                {
-                  "type": "record",
-                  "name": "DataBundle",
-                  "namespace": "one.terenin.datagenerator",
-                  "fields": [
-                    {"name": "uuid", "type": "string"},
-                    {"name": "name", "type": "string"},
-                    {"name": "description", "type": "string"},
-                    {"name": "type", "type": "string"},
-                    {"name": "mainCategory", "type": "string"},
-                    {"name": "price", "type": "string"},
-                    {"name": "productOwner", "type": "string"},
-                    {"name": "slaveCategories", "type": {"type": "array", "items": "string"}},
-                    {"name": "options", "type": {"type": "map", "values": "string"}},
-                    {"name": "characteristics", "type": {"type": "map", "values": "string"}}
-                  ]
-                }
-                """;
+    public static String asJson = "{\n" +
+            "  \"type\": \"record\",\n" +
+            "  \"name\": \"DataBundle\",\n" +
+            "  \"namespace\": \"one.terenin.datagenerator\",\n" +
+            "  \"fields\": [\n" +
+            "    {\"name\": \"uuid\", \"type\": \"string\"},\n" +
+            "    {\"name\": \"name\", \"type\": \"string\"},\n" +
+            "    {\"name\": \"description\", \"type\": \"string\"},\n" +
+            "    {\"name\": \"type\", \"type\": \"string\"},\n" +
+            "    {\"name\": \"mainCategory\", \"type\": \"string\"},\n" +
+            "    {\"name\": \"price\", \"type\": \"string\"},\n" +
+            "    {\"name\": \"productOwner\", \"type\": \"string\"},\n" +
+            "    {\"name\": \"slaveCategories\", \"type\": {\"type\": \"array\", \"items\": \"string\"}},\n" +
+            "    {\"name\": \"options\", \"type\": {\"type\": \"map\", \"values\": \"string\"}},\n" +
+            "    {\"name\": \"characteristics\", \"type\": {\"type\": \"map\", \"values\": \"string\"}}\n" +
+            "  ]\n" +
+            "}";
 
     public static Schema asAvroSchema = new Schema.Parser().parse(asJson);
 

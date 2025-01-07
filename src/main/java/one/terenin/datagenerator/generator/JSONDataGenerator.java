@@ -20,12 +20,11 @@ import java.util.*;
 
 @Service
 @AllArgsConstructor
-public class JSONDataGenerator implements DataGenerator {
+public class JSONDataGenerator implements DataGenerator<String> {
 
-    private final OzoneClient client;
 
     @Override
-    public void generate(int count) throws IOException {
+    public void generate(int count, OzoneClient client) throws IOException {
 
         String keyName = "data_bundle.json";
 
@@ -34,10 +33,16 @@ public class JSONDataGenerator implements DataGenerator {
         OzoneVolume volume = client.getObjectStore().getVolume(OzoneNames.ozoneVolumeName);
         OzoneBucket bucket = volume.getBucket(OzoneNames.ozoneJSONBucketName);
 
-        try (OzoneOutputStream outputStream = bucket.createKey(keyName, 0)) {
+        try (OzoneOutputStream outputStream = bucket.createKey(keyName, 9953543)) {
             writeJsonToFile(dataBundles, outputStream);
         }
+    }
 
+    @Override
+    public String generateWithResponse(int count) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectWriter writer = objectMapper.writerWithDefaultPrettyPrinter();
+        return writer.writeValueAsString(generateSampleData(10));
     }
 
     private void writeJsonToFile(List<DataBundle> data, OutputStream stream) throws IOException {

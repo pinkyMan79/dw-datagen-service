@@ -1,13 +1,14 @@
 package one.terenin.datagenerator.generator.parent;
 
 import one.terenin.datagenerator.dto.DataBundle;
+import org.apache.hadoop.ozone.client.OzoneClient;
 
 import java.io.IOException;
 import java.util.*;
 
-public interface DataGenerator {
+public interface DataGenerator<T> {
 
-    void generate(int count) throws IOException;
+    void generate(int count, OzoneClient client) throws IOException;
 
     default List<DataBundle> generateSampleData(int count) {
         List<DataBundle> dataList = new ArrayList<>();
@@ -27,4 +28,6 @@ public interface DataGenerator {
         }
         return dataList;
     }
+
+    T generateWithResponse(int count) throws IOException;
 }

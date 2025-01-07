@@ -5,10 +5,10 @@ ozone:
   security:
     enabled: false
   om:
-    address: "127.0.0.1:9862"
+    address: "127.0.0.1:9874"
   default:
     conf:
       enable: true
 data:
   gen:
-    count: 200
+    count: 10

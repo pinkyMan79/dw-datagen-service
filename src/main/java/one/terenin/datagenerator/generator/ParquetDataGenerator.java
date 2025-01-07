@@ -1,8 +1,10 @@
 package one.terenin.datagenerator.generator;
 
+import lombok.RequiredArgsConstructor;
 import one.terenin.datagenerator.common.OzoneNames;
 import one.terenin.datagenerator.common.ParquetSchemaHolder;
 import one.terenin.datagenerator.dto.DataBundle;
+import one.terenin.datagenerator.generator.fw.BufferedWriter;
 import one.terenin.datagenerator.generator.fw.OzoneOutputFile;
 import one.terenin.datagenerator.generator.parent.DataGenerator;
 import org.apache.avro.Schema;
@@ -17,30 +19,24 @@ import org.apache.parquet.hadoop.ParquetWriter;
 import org.apache.parquet.hadoop.metadata.CompressionCodecName;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
 
 @Service
-public class ParquetDataGenerator implements DataGenerator {
+@RequiredArgsConstructor
+public class ParquetDataGenerator implements DataGenerator<byte[]> {
 
-    private final OzoneClient ozoneClient;
-
-    public ParquetDataGenerator(OzoneClient ozoneClient) {
-        this.ozoneClient = ozoneClient;
-    }
-
-    public void generate(int count) throws IOException {
+    @Override
+    public void generate(int count, OzoneClient client) throws IOException {
         String outputFileName = "data_bundle.parquet";
         List<DataBundle> data = generateSampleData(count);
         Schema schema = ParquetSchemaHolder.asAvroSchema;
 
-        // Get Ozone Volume and Bucket
-        OzoneVolume volume = ozoneClient.getObjectStore().getVolume(OzoneNames.ozoneVolumeName);
+        OzoneVolume volume = client.getObjectStore().getVolume(OzoneNames.ozoneVolumeName);
         OzoneBucket bucket = volume.getBucket(OzoneNames.ozoneBucketName);
 
-        // Create OzoneOutputStream for the file
         try (OzoneOutputStream ozoneOutputStream = bucket.createKey(outputFileName, 0L)) {
-            // Create ParquetWriter that writes directly to the OzoneOutputStream, see fw.OzoneOutputFile
             try (ParquetWriter<GenericRecord> writer = AvroParquetWriter.<GenericRecord>builder(
                             new OzoneOutputFile(ozoneOutputStream))
                     .withSchema(schema)
@@ -53,6 +49,27 @@ public class ParquetDataGenerator implements DataGenerator {
                 }
             }
         }
+    }
+
+    @Override
+    public byte[] generateWithResponse(int count) throws IOException {
+        String outputFileName = "data_bundle.parquet";
+        List<DataBundle> data = generateSampleData(count);
+        Schema schema = ParquetSchemaHolder.asAvroSchema;
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        try (ParquetWriter<GenericRecord> writer = AvroParquetWriter.<GenericRecord>builder(
+                new BufferedWriter(outputStream))
+                .withSchema(schema)
+                .withCompressionCodec(CompressionCodecName.SNAPPY)
+                .build()){
+            for (DataBundle bundle : data) {
+                GenericRecord record = convertToAvroRecord(schema, bundle);
+                writer.write(record);
+            }
+        }
+        return outputStream.toByteArray();
     }
 
     private GenericRecord convertToAvroRecord(Schema schema, DataBundle bundle) {
