@@ -53,7 +53,6 @@ public class ParquetDataGenerator implements DataGenerator<byte[]> {
 
     @Override
     public byte[] generateWithResponse(int count) throws IOException {
-        String outputFileName = "data_bundle.parquet";
         List<DataBundle> data = generateSampleData(count);
         Schema schema = ParquetSchemaHolder.asAvroSchema;
 
@@ -62,7 +61,7 @@ public class ParquetDataGenerator implements DataGenerator<byte[]> {
         try (ParquetWriter<GenericRecord> writer = AvroParquetWriter.<GenericRecord>builder(
                 new BufferedWriter(outputStream))
                 .withSchema(schema)
-                .withCompressionCodec(CompressionCodecName.SNAPPY)
+                .withCompressionCodec(CompressionCodecName.GZIP)
                 .build()){
             for (DataBundle bundle : data) {
                 GenericRecord record = convertToAvroRecord(schema, bundle);
